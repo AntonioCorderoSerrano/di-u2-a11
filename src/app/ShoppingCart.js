@@ -15,13 +15,14 @@ const initialProducts = [{
 }];
 
 export default function ShoppingCart() {
-  const [
-    products,
-    setProducts
-  ] = useState(initialProducts)
+  const [products, setProducts] = useState(initialProducts);
 
   function handleIncreaseClick(productId) {
+    const siguienteProducto = [...products];
+    const producto = siguienteProducto.find(p => p.id === productId);
 
+    producto.count += 1;
+    setProducts(siguienteProducto);
   }
 
   return (

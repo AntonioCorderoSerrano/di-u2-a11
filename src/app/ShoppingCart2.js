@@ -1,3 +1,4 @@
+import { useImmer } from 'use-immer';
 import { useState } from 'react';
 
 const initialProducts = [{
@@ -15,22 +16,29 @@ const initialProducts = [{
 }];
 
 export default function ShoppingCart() {
-  const [
-    products,
-    setProducts
-  ] = useState(initialProducts)
+  const [products, setProducts] = useImmer(initialProducts);
 
   function handleIncreaseClick(productId) {
-    setProducts(products.map(product => {
-      if (product.id === productId) {
-        return {
-          ...product,
-          count: product.count + 1
-        };
-      } else {
-        return product;
+    setProducts(draft => {
+      const product = draft.find(p => p.id === productId);
+      if (product) {
+        product.count += 1;
       }
-    }))
+    });
+  }
+
+  function handleDecreaseClick(productId) {
+    setProducts(draft => {
+      const product = draft.find(p => p.id === productId);
+      if (product) {
+        product.count -= 1;
+        // Elimina el producto si su contador llega a 0
+        if (product.count === 0) {
+          const index = draft.findIndex(p => p.id === productId);
+          draft.splice(index, 1);
+        }
+      }
+    });
   }
 
   return (
@@ -40,12 +48,10 @@ export default function ShoppingCart() {
           {product.name}
           {' '}
           (<b>{product.count}</b>)
-          <button onClick={() => {
-            handleIncreaseClick(product.id);
-          }}>
+          <button onClick={() => handleIncreaseClick(product.id)}>
             +
           </button>
-          <button>
+          <button onClick={() => handleDecreaseClick(product.id)}>
             –
           </button>
         </li>

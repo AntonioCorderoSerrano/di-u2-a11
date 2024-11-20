@@ -10,38 +10,23 @@ const initialTodos = [
 ];
 
 export default function TaskApp() {
-  const [todos, setTodos] = useState(
-    initialTodos
-  );
+  const [todos, setTodos] = useState(initialTodos);
 
   function handleAddTodo(title) {
-    todos.push({
-      id: nextId++,
-      title: title,
-      done: false
-    });
+    setTodos(prevTodos => [...prevTodos,{ id: nextId++, title: title, done: false }]);
   }
 
   function handleChangeTodo(nextTodo) {
-    const todo = todos.find(t =>
-      t.id === nextTodo.id
-    );
-    todo.title = nextTodo.title;
-    todo.done = nextTodo.done;
+    setTodos(prevTodos => prevTodos.map(todo => todo.id === nextTodo.id ? { ...todo, ...nextTodo } : todo));
   }
 
   function handleDeleteTodo(todoId) {
-    const index = todos.findIndex(t =>
-      t.id === todoId
-    );
-    todos.splice(index, 1);
+    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
   }
 
   return (
     <>
-      <AddTodo
-        onAddTodo={handleAddTodo}
-      />
+      <AddTodo onAddTodo={handleAddTodo} />
       <TaskList
         todos={todos}
         onChangeTodo={handleChangeTodo}
